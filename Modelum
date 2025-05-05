@@ -1,1 +1,162 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blueprint & Investment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75);
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    select, input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    img {
+      display: block;
+      margin: 20px auto 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+
+    #houseOptions,
+    #cryptoOptions,
+    #robotOptions {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Blueprint & Investment Planner</h1>
+    <select id="typeSelect" onchange="showOptions()">
+      <option value="house">House</option>
+      <option value="crypto">Ethereum Investment</option>
+      <option value="robot">Robot Model</option>
+    </select>
+
+    <div id="houseOptions">
+      <input type="number" id="floors" placeholder="Number of Floors">
+      <input type="number" id="rooms" placeholder="Rooms per Floor">
+      <input type="number" id="sqft" placeholder="Room Size (sqft)">
+    </div>
+
+    <div id="cryptoOptions" style="display:none;">
+      <select id="investType">
+        <option value="bitcoin">Bitcoin</option>
+        <option value="trading">Color Trading</option>
+        <option value="stock">Stock</option>
+        <option value="realestate">Real Estate</option>
+        <option value="sharemarket">Share Market</option>
+      </select>
+      <input type="number" id="budget" placeholder="Investment Budget">
+    </div>
+
+    <div id="robotOptions" style="display:none;">
+      <select id="robotType">
+        <option value="fighting">Fighting Bot</option>
+        <option value="racing">Racing Bot</option>
+        <option value="flying">Flying Bot</option>
+      </select>
+    </div>
+
+    <button onclick="generateBlueprint()">Generate</button>
+
+    <img id="resultImg" src="/static/house_blueprint.png" alt="Generated Result" width="100%">
+  </div>
+
+  <script>
+    function showOptions() {
+      const type = document.getElementById("typeSelect").value;
+      document.getElementById("houseOptions").style.display = type === "house" ? "block" : "none";
+      document.getElementById("cryptoOptions").style.display = type === "crypto" ? "block" : "none";
+      document.getElementById("robotOptions").style.display = type === "robot" ? "block" : "none";
+    }
+
+    function generateBlueprint() {
+      const type = document.getElementById("typeSelect").value;
+
+      if (type === "house") {
+        const floors = document.getElementById("floors").value;
+        const rooms = document.getElementById("rooms").value;
+        const sqft = document.getElementById("sqft").value;
+
+        fetch('http://127.0.0.1:5000/generate_house', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ floors, rooms, sqft })
+        })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("resultImg").src = data.image;
+        });
+
+      } else if (type === "crypto") {
+        const investType = document.getElementById("investType").value;
+        const budget = document.getElementById("budget").value;
+
+        fetch('/generate_crypto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ investment_type: investType, budget })
+        })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("resultImg").src = data.image;
+        });
+
+      } else if (type === "robot") {
+        const robotType = document.getElementById("robotType").value;
+
+        fetch('/generate_robot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ robot_type: robotType })
+        })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("resultImg").src = data.image;
+        });
+      }
+    }
+  </script>
+</body>
+</html>
